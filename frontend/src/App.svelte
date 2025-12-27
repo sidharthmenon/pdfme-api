@@ -78,6 +78,20 @@
     fileHandle = await saveTemplateAs(template); // now future saves overwrite this file
   };
 
+  const copyTemplateToClipboard = async () => {
+    try {
+      const template = designer.getTemplate();
+      const json = JSON.stringify(template, null, 2);
+
+      await navigator.clipboard.writeText(json);
+
+      alert('Template JSON copied to clipboard');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to copy template JSON');
+    }
+  };
+
   onMount(async () => {
     
 
@@ -151,6 +165,10 @@
 
     <button class="px-2 py-1 border rounded hover:bg-gray-300 cursor-pointer " on:click={save}>
       Save
+    </button>
+
+    <button class="px-2 py-1 border rounded hover:bg-gray-300 cursor-pointer " on:click={copyTemplateToClipboard}>
+      Copy Template
     </button>
 
     <!-- <button class="px-2 py-1 border rounded" on:click={saveAs}>
