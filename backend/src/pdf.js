@@ -2,6 +2,8 @@ import { generate } from '@pdfme/generator';
 import { createApiKeyPreHandler } from './auth.js';
 import { getPlugins } from './plugins.js';
 import { getFontsData } from './fonts.js';
+import { checkTemplate } from '@pdfme/common';
+import { loadRemoteTemplateCached } from './template.js';
 
 const apiKeyPreHandler = createApiKeyPreHandler();
 
@@ -19,13 +21,25 @@ export default async function pdfRoutes(fastify) {
         });
       }
       
-      const { template, inputs } = request.body;
+      let { template, template_url, inputs } = request.body;
 
-      if (!template || !inputs) {
+      if(template && template_url){
+        return reply.code(400).send({
+          error: 'Only template or template_url should be send.'
+        });
+      }
+
+      if (!(template || template_url) || !inputs) {
         return reply.code(400).send({
           error: 'template and inputs are required'
         });
       }
+
+      if(template_url){
+        template = await loadRemoteTemplateCached(template_url);
+      }
+
+      console.log("Template: ", template);
 
       try {
         const pdf = await generate({
