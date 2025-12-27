@@ -11,7 +11,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app = Fastify({ logger: true });
+const app = Fastify({ logger: true, bodyLimit: 5 * 1024 });
 
 app.register(rateLimit, {
   max: Number(process.env.RATE_LIMIT_MAX || 30),
